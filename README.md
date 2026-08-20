@@ -4,6 +4,30 @@ D8-J2ME is an experimental public fork of Google's D8/R8 compiler specialized fo
 Java ME loaders such as JL-Mod Plus. It is not a general replacement for the official R8
 distribution.
 
+## Project status
+
+D8-J2ME is a maintained experiment suitable for evaluation and archival use, not a drop-in
+production replacement for DX or the official R8 distribution.
+
+Verified so far:
+
+- the shrunken compiler runs inside a JL-Mod Plus release APK on Android 16/API 36;
+- J2ME ImageViewer converts and runs successfully;
+- repeated and concurrent artifact-level compilation is deterministic; and
+- SimCity Societies converts, although ART still rejects its pre-existing short-to-boolean
+  bytecode mismatch.
+
+Important limitations:
+
+- compiler output targets `minApi 23`, but host execution has not been verified on an API 23
+  device or emulator;
+- downstream Android shrinking currently warns about fastutil default-method bridges and may insert
+  `NoSuchMethodError` below API 24; and
+- consumers should retain a known-good dexer until their own Java ME corpus and Android support
+  range have passed runtime testing.
+
+See [`docs/STATUS.md`](docs/STATUS.md) for measurements and the complete validation matrix.
+
 The public artifact provides a deliberately small API surface:
 
 ```java
@@ -38,10 +62,6 @@ tools/gradle.py d8j2meTest
 
 This builds the shrunken distribution and exercises its public API repeatedly and concurrently,
 including input validation, deterministic output, DEX magic, and the embedded threading provider.
-
-Status: maintained experiment, suitable for evaluation and archival use. Conversion success does
-not imply game runtime compatibility, and consumers should retain their existing dexer until their
-own Java ME corpus and Android support range have passed runtime testing.
 
 ## Upstream documentation
 
