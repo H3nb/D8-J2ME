@@ -11,6 +11,7 @@ import com.android.tools.r8.keepanno.annotations.KeepTarget;
 import com.android.tools.r8.keepanno.annotations.MemberAccessFlags;
 import com.android.tools.r8.keepanno.annotations.UsedByReflection;
 import com.android.tools.r8.keepanno.annotations.UsesReflection;
+import com.android.tools.r8.threading.providers.singlethreaded.ThreadingModuleSingleThreadedProvider;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -46,6 +47,13 @@ public interface ThreadingModule {
 
   class Loader {
 
+    private static volatile boolean useJ2meSingleThreadedProvider;
+
+    /** Selects the Android-safe direct provider used by the embedded J2ME compiler. */
+    public static void enableJ2meSingleThreadedProvider() {
+      useJ2meSingleThreadedProvider = true;
+    }
+
     @UsedByReflection(
         description = "Prevent analysis any inlining and assumptions of the provider class names",
         constraints = {KeepConstraint.NEVER_INLINE})
@@ -72,6 +80,9 @@ public interface ThreadingModule {
           methodParameters = {})
     })
     public static ThreadingModuleProvider load() {
+      if (useJ2meSingleThreadedProvider) {
+        return new ThreadingModuleSingleThreadedProvider();
+      }
       for (String name : getProviderNames()) {
         try {
           Class<?> providerClass = Class.forName(name);

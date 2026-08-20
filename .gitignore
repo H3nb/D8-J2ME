@@ -343,6 +343,7 @@ third_party/smali.tar.gz
 third_party/youtube/*
 third_party/**/*.success
 tmp/
+*.tmp
 tools/*.pyc
 tools/__pycache__
 tools/*/art
