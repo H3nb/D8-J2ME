@@ -4,7 +4,7 @@ D8-J2ME is an experimental public fork of Google's D8/R8 compiler specialized fo
 Java ME loaders such as JL-Mod Plus. It is not a general replacement for the official R8
 distribution.
 
-The first target provides a deliberately small API surface:
+The public artifact provides a deliberately small API surface:
 
 ```java
 List<byte[]> dexFiles = J2meD8.compile(instrumentedClassFiles);
@@ -12,7 +12,13 @@ List<byte[]> dexFiles = J2meD8.compile(instrumentedClassFiles);
 
 Its current contract is fixed to release-mode DEX, Android `minApi 23`, and disabled desugaring.
 The wrapper uses a direct single-threaded provider to avoid reflection/provider lookup failures when
-the compiler itself is processed into an Android APK.
+the compiler itself is processed into an Android APK. Calls are serialized to bound peak compiler
+memory and avoid racing the process-wide threading-provider selection. Invalid, null, and empty
+inputs fail before D8 starts, and output indexes are checked before results are returned.
+
+The caller remains responsible for Java ME-specific instrumentation and compatibility transforms.
+D8-J2ME only converts valid Java class files to DEX; it does not normalize ambiguous primitive
+types or emulate Java ME APIs.
 
 Build the experimental library with:
 
@@ -24,8 +30,18 @@ The artifact is written to `build/libs/d8-j2me.jar`. See [`UPSTREAM.md`](UPSTREA
 upstream revision and sync policy, and [`docs/STATUS.md`](docs/STATUS.md) for measured results and
 the remaining production gates.
 
-Status: early experiment. Conversion success does not imply game runtime compatibility, and the
-artifact must not replace the production DX backend until it passes Android runtime and size gates.
+Run the artifact-level regression suite with:
+
+```text
+tools/gradle.py d8j2meTest
+```
+
+This builds the shrunken distribution and exercises its public API repeatedly and concurrently,
+including input validation, deterministic output, DEX magic, and the embedded threading provider.
+
+Status: maintained experiment, suitable for evaluation and archival use. Conversion success does
+not imply game runtime compatibility, and consumers should retain their existing dexer until their
+own Java ME corpus and Android support range have passed runtime testing.
 
 ## Upstream documentation
 

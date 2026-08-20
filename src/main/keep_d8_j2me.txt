@@ -10,7 +10,7 @@
   public *;
 }
 
--keepattributes Exceptions,InnerClasses,EnclosingMethod
+-keepattributes Exceptions,InnerClasses,EnclosingMethod,Signature
 -repackageclasses com.android.tools.r8.j2me.internal
 
 # Perfetto tracing is a desktop diagnostic feature. Its library references ProcessHandle and other

@@ -394,4 +394,22 @@ tasks {
 
     setOutputJarFile(File(rootDir, "build/libs/d8-j2me.jar"))
   }
+
+  val compileD8J2meSmokeTest =
+    register<JavaCompile>("compileD8J2meSmokeTest") {
+      dependsOn("d8J2meLib")
+      source = fileTree(File(rootDir, "src/test/j2me")) { include("**/*.java") }
+      classpath = files(File(rootDir, "build/libs/d8-j2me.jar"))
+      destinationDirectory.set(layout.buildDirectory.dir("classes/java/d8J2meSmokeTest"))
+      options.release.set(8)
+    }
+
+  register<JavaExec>("d8J2meSmokeTest") {
+    dependsOn(compileD8J2meSmokeTest)
+    classpath(
+      compileD8J2meSmokeTest.flatMap { it.destinationDirectory },
+      files(File(rootDir, "build/libs/d8-j2me.jar")),
+    )
+    mainClass.set("com.android.tools.r8.j2me.J2meD8SmokeTest")
+  }
 }
