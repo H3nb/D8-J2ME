@@ -1,4 +1,33 @@
-# D8 dexer and R8 shrinker
+# D8-J2ME
+
+D8-J2ME is an experimental public fork of Google's D8/R8 compiler specialized for embedded use by
+Java ME loaders such as JL-Mod Plus. It is not a general replacement for the official R8
+distribution.
+
+The first target provides a deliberately small API surface:
+
+```java
+List<byte[]> dexFiles = J2meD8.compile(instrumentedClassFiles);
+```
+
+Its current contract is fixed to release-mode DEX, Android `minApi 23`, and disabled desugaring.
+The wrapper uses a direct single-threaded provider to avoid reflection/provider lookup failures when
+the compiler itself is processed into an Android APK.
+
+Build the experimental library with:
+
+```text
+tools/gradle.py d8j2me
+```
+
+The artifact is written to `build/libs/d8-j2me.jar`. See [`UPSTREAM.md`](UPSTREAM.md) for the pinned
+upstream revision and sync policy, and [`docs/STATUS.md`](docs/STATUS.md) for measured results and
+the remaining production gates.
+
+Status: early experiment. Conversion success does not imply game runtime compatibility, and the
+artifact must not replace the production DX backend until it passes Android runtime and size gates.
+
+## Upstream documentation
 
 The R8 repo contains two tools:
 

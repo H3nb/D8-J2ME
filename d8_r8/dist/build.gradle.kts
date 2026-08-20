@@ -381,4 +381,17 @@ tasks {
 
     setOutputJarFile(File(rootDir, "build/libs/processkeepruleslib.jar"))
   }
+
+  register<CreateR8LibraryTask>("d8J2meLib") {
+    r8compilerClasspath.from(r8WithRelocatedDeps.flatMap { it.outputFile })
+    inputJar = r8WithRelocatedDeps.flatMap { it.outputFile }
+    pgConfigs.from(
+      File(rootDir, "src/main/keep_d8_j2me.txt"),
+      File(rootDir, "src/main/discard.txt"),
+    )
+    enableKeepAnnotations = false
+    enableHorizontalClassMerging = true
+
+    setOutputJarFile(File(rootDir, "build/libs/d8-j2me.jar"))
+  }
 }

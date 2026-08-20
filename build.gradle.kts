@@ -13,4 +13,5 @@ tasks {
   register("r8") { dependsOn(":dist:r8WithRelocatedDeps") }
   register("swissArmyKnife") { dependsOn(":swissarmyknife:jar") }
   register("r8lib") { dependsOn(":test:assembleR8LibWithRelocatedDeps") }
+  register("d8j2me") { dependsOn(":dist:d8J2meLib") }
 }

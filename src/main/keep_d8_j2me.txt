@@ -1,0 +1,31 @@
+# Copyright (c) 2026, D8-J2ME contributors.
+# All rights reserved. Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+# The only supported API of the embedded distribution.
+-keep,allowoptimization public class com.android.tools.r8.j2me.J2meD8 {
+  public *;
+}
+-keep,allowoptimization public class com.android.tools.r8.j2me.J2meD8$J2meD8Exception {
+  public *;
+}
+
+-keepattributes Exceptions,InnerClasses,EnclosingMethod
+-repackageclasses com.android.tools.r8.j2me.internal
+
+# Perfetto tracing is a desktop diagnostic feature. Its library references ProcessHandle and other
+# APIs that are not part of Android's Java runtime, so the embedded distribution never enables it.
+-assumevalues class com.android.tools.r8.utils.InternalOptions {
+  java.lang.String perfettoTraceDumpDirectory return null;
+  java.lang.String perfettoTraceDumpFile return null;
+}
+
+# Annotations used to strip upstream debug-only code.
+-assumenosideeffects class * {
+  @com.android.tools.r8.annotations.AssumeNoSideEffects <methods>;
+}
+-checkdiscard class * {
+  @com.android.tools.r8.annotations.CheckDiscard <fields>;
+}
+
+-include dontwarn.txt
